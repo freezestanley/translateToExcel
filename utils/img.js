@@ -72,15 +72,16 @@ function writeImage(drawimg, path) {
 
 
 // var ss = getSlicesBlock('./src/pig.png', './slice/pig.jpg', { width: 100, height: '100%' }, 'h')
-async function getSlicesBlock(path, output, slice, type = 'v', host) {
-  if (!path) return
+async function getSlicesBlock(path, output, slice, type = 'v') {
+    if (!path) return
     spinner.info(`${path} sliceing...`)
-  let myimg = null
-  try {
-    myimg = await loadImage(path)
-  } catch (e) {
-    return console.error(`error: ${path}`)
-  }
+    let myimg = null
+    try {
+      myimg = await loadImage(path)
+    } catch (e) {
+      console.error(`error: ${e} ${path} `)
+      return
+    }
     
     let slices = getSlice(myimg, { width: slice.width, height: slice.height }, type)
     
@@ -97,10 +98,10 @@ async function getSlicesBlock(path, output, slice, type = 'v', host) {
       replace: []
     }
 
-    mkdir(Path.join(process.cwd(), dirname))
+  // mkdir(Path.join(process.cwd(), dirname))
+    mkdir(dirname)
     slices.map(async (e, idx) => {
-      let tempPath = Path.join(process.cwd(), dirname, basename + `_${idx++}` + ext)
-      
+      let tempPath = Path.join(dirname, basename + `_${idx++}` + ext)
       imgSliceInfo.slices.push(tempPath)
       let wi_path = await writeImage({
         img: myimg,
@@ -116,8 +117,7 @@ async function getSlicesBlock(path, output, slice, type = 'v', host) {
       tempPath
       )
     })
-      return imgSliceInfo
-
+  return imgSliceInfo
 }
 
 exports.getSlicesBlock = getSlicesBlock
